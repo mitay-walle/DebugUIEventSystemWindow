@@ -1,73 +1,97 @@
+using System;
+using System.Reflection;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
 
 namespace Plugins.Editor
 {
-    [EditorWindowTitle(title = TITLE)]
-    public class DebugUIEventSystemWindow : EditorWindow
-    {
-        public const string TITLE = "Debug UI.EventSystem";
-        static GUIStyle STYLE = new GUIStyle();
+	[EditorWindowTitle(title = TITLE)]
+	public sealed class DebugUIEventSystemWindow : EditorWindow
+	{
+		public const string TITLE = "Debug UI.EventSystem";
+		private static GUIStyle STYLE = new GUIStyle();
 
-        [MenuItem("Window/" + TITLE)]
-        public static void OpenWindow()
-        {
-            var window = GetWindow<DebugUIEventSystemWindow>(TITLE);
+		private string content;
+		private EventSystem eSystem;
+		private Vector2 _scroll;
 
-            if (!window) window = CreateInstance<DebugUIEventSystemWindow>();
-            window.ShowUtility();
-        }
+		private void OnEnable() => titleContent = new GUIContent(TITLE);
 
-        EventSystem eSystem;
-        Vector2 _scroll;
+		private void FindSystem()
+		{
+			if (eSystem) return;
+			eSystem = FindObjectOfType<EventSystem>();
+		}
 
-        protected void OnEnable()
-        {
-            titleContent = new GUIContent(TITLE);
-        }
+		private void OnGUI()
+		{
+			STYLE = new GUIStyle(GUI.skin.label)
+			{
+				richText = true,
+			};
 
-        void FindSystem()
-        {
-            if (eSystem) return;
-            eSystem = FindObjectOfType<EventSystem>();
-        }
+			EditorGUILayout.ObjectField(EventSystem.current, typeof(EventSystem), true);
 
-        string content;
+			EditorGUILayout.ObjectField(
+				EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null,
+				typeof(GameObject),
+				true);
 
-        protected void OnGUI()
-        {
-            STYLE = new GUIStyle(GUI.skin.label)
-            {
-                richText = true,
-            };
+			_scroll = GUILayout.BeginScrollView(_scroll);
+			GUILayout.Label(content, STYLE);
+			GUILayout.EndScrollView();
+		}
 
-            EditorGUILayout.ObjectField(EventSystem.current, typeof(EventSystem), true);
+		private void Update()
+		{
+			FindSystem();
 
-            EditorGUILayout.ObjectField(
-                EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null,
-                typeof(GameObject),
-                true);
+			if (!eSystem)
+			{
+				content = "<b>EventSystem не найдена! </b>";
+				return;
+			}
 
-            _scroll = GUILayout.BeginScrollView(_scroll);
-            GUILayout.Label(content, STYLE);
-            GUILayout.EndScrollView();
-        }
+			#if ENABLE_INPUT_SYSTEM
+			if (eSystem.TryGetComponent<InputSystemUIInputModule>(out var module))
+			{
+				ProcessInputSystem(module);
+			}
+			else
+			{
+				content = eSystem.ToString().Replace("(UnityEngine.GameObject)", string.Empty).Replace("(UnityEngine.Camera)", string.Empty);
+			}
+			#else
+			content = eSystem.ToString().Replace("(UnityEngine.GameObject)", string.Empty).Replace("(UnityEngine.Camera)", string.Empty);
+			#endif
 
-        void Update()
-        {
-            FindSystem();
+			Repaint();
+		}
 
-            if (!eSystem)
-            {
-                content = "<b>EventSystem не найдена! </b>";
-                return;
-            }
+		private void ProcessInputSystem(InputSystemUIInputModule module)
+		{
+			var sb = new StringBuilder("<b>Pointer Input Module of type: </b>" + GetType());
+			sb.AppendLine();
+			foreach (var pointer in module.m_PointerStates)
+			{
+				if (pointer.eventData == null)
+					continue;
+				sb.AppendLine("<B>Pointer:</b> " + pointer.eventData.touchId);
+				sb.AppendLine(pointer.eventData.ToString());
+			}
+			content = sb.ToString();
+		}
 
-            content = eSystem.ToString().Replace("(UnityEngine.GameObject)", string.Empty)
-                .Replace("(UnityEngine.Camera)", string.Empty);
+		[MenuItem("Window/" + TITLE)]
+		public static void OpenWindow()
+		{
+			var window = GetWindow<DebugUIEventSystemWindow>(TITLE);
 
-            Repaint();
-        }
-    }
+			if (!window) window = CreateInstance<DebugUIEventSystemWindow>();
+			window.ShowUtility();
+		}
+	}
 }
