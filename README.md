@@ -6,4 +6,4 @@ Unity3d EditorWindow, that display UI.EventSystem info about current touches / p
 # Features
 - support Legacy input
 - support new input system
-
+- Unity 6 support
