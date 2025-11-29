@@ -1,24 +1,3 @@
 {
-    "name": "DebugUIEventSystemWindow",
-    "rootNamespace": "",
-    "references": [
-        "GUID:75469ad4d38634e559750d17036d5f7c"
-    ],
-    "includePlatforms": [
-        "Editor"
-    ],
-    "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [
-        {
-            "name": "com.unity.inputsystem",
-            "expression": "1.1.1",
-            "define": "ENABLE_INPUT_SYSTEM"
-        }
-    ],
-    "noEngineReferences": false
+    "reference": "GUID:3ae5734e49d646442ad24f37762ebdd2"
 }
