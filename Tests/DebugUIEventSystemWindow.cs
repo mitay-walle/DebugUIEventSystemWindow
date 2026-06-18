@@ -104,13 +104,13 @@ namespace Plugins.Editor
         }
 #endif
 
-		[MenuItem("Window/" + TITLE)]
-		public static void OpenWindow()
-		{
-			var window = GetWindow<DebugUIEventSystemWindow>(TITLE);
-
-			if (!window) window = CreateInstance<DebugUIEventSystemWindow>();
-			window.ShowUtility();
-		}
+		// [MenuItem("Window/" + TITLE)]
+		// public static void OpenWindow()
+		// {
+		// 	var window = GetWindow<DebugUIEventSystemWindow>(TITLE);
+		//
+		// 	if (!window) window = CreateInstance<DebugUIEventSystemWindow>();
+		// 	window.ShowUtility();
+		// }
 	}
 }
