@@ -4,5 +4,10 @@
   "displayName": "UI EventSystem Window",
   "description": "Unity3d EditorWindow, that display UI.EventSystem info about current touches / pointers, hovered objects",
   "unity": "2017.1",
-  "_fingerprint": "9cadcb4e0a60323a3af36b88449f2edb7f4241a8"
+  "_fingerprint": "9cadcb4e0a60323a3af36b88449f2edb7f4241a8",
+  "author": {
+    "name": "mitay-walle",
+    "email": "mitay-walle91@mail.ru",
+    "url": "https://github.com/mitay-walle"
+  }
 }
